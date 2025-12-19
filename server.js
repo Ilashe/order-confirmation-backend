@@ -138,14 +138,24 @@ app.post('/api/send-order-confirmation', async (req, res) => {
             <p>${customMessage}</p>
     `;
 
-    // Add images if provided
+    // Add images as attachments if provided
+    let attachments = [];
     if (images && images.length > 0) {
       htmlContent += '<div class="images-container">';
       images.forEach((imageData, index) => {
-        htmlContent += `<img src="${imageData}" alt="Product Photo ${index + 1}" style="max-width: 500px; margin: 10px 0;" />`;
-      });
-      htmlContent += '</div>';
-    }
+       htmlContent += `<img src="${imageData}" alt="Product Photo ${index + 1}" style="max-width: 500px; margin: 10px 0;" />`;
+    
+       // Convert base64 to buffer for attachment
+       const base64Data = imageData.split(',')[1];
+       attachments.push({
+         content: base64Data,
+         filename: `product-photo-${index + 1}.jpg`,
+         type: 'image/jpeg',
+         disposition: 'attachment'
+       });
+     });
+     htmlContent += '</div>';
+   }
 
     htmlContent += `
             <p>Thank you for your business! We appreciate your order and look forward to your feedback.</p>
